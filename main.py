@@ -61,7 +61,7 @@ def run_pipeline(requirement: str, num_stories: int) -> list[dict]:
     # Phase 3：构建用户故事关系图
     # ------------------------------------------------------------------ #
     print("Phase 3：构建关系图...")
-    synonymy_graph, cooperation_graph, dependency_graph = build_graphs(stories)
+    synonymy_graph, cooperation_graph, dependency_graph = build_graphs(stories,dllm)
 
     synonymy_edges   = list(synonymy_graph.edges(data=True))
     cooperation_edges = list(cooperation_graph.edges(data=True))

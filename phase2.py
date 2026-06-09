@@ -113,6 +113,7 @@ def generate_role_action(
         )
 
         low_quality = False
+        '''
         for retry_idx in range(config.MAX_RETRY):
             role   = dllm.decode_region(token_ids, role_start, role_end)
             action = dllm.decode_region(token_ids, action_start, action_end)
@@ -133,7 +134,7 @@ def generate_role_action(
         else:
             # 3 次重试均失败
             low_quality = True
-
+        '''
         role   = dllm.decode_region(token_ids, role_start, role_end)
         action = dllm.decode_region(token_ids, action_start, action_end)
 
