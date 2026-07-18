@@ -15,9 +15,11 @@ import jieba.posseg as pseg
 import networkx as nx
 
 import config
+from dllm_interface import DLLMModel
 from validator import _semantic_similarity, _llm_judge
 
-
+from typing import List
+import re
 # ------------------------------------------------------------------ #
 # 辅助：业务对象提取 + 归一化
 # ------------------------------------------------------------------ #
@@ -66,8 +68,8 @@ def _check_dependency_rules(action_a: str, action_b: str) -> bool:
 def _check_dependency_llm(action_a: str, action_b: str) -> bool:
     """用 LLM 判定 action_a 是否依赖 action_b（兜底）。"""
     prompt = (
-        f"在软件系统中，要完成动作"{action_a}"，是否必须先完成"{action_b}"？\n"
-        f"只输出 是 或 否。"
+      f"在软件系统中，要完成动作\"{action_a}\"，是否必须先完成\"{action_b}\"？\n"
+      f"只输出 是 或 否。"
     )
     return _llm_judge(prompt) == 1
 
@@ -114,7 +116,7 @@ def build_graphs(
     #使用对话形式引导大模型一次输出所有依赖关系
     pairs_str=two_stage_conversation(dllm,simple_US_str)
     #将大模型输出内容转化为二维数组pairs_array
-    pairs_array=parse_pairs_to_2d_array（pairs_str）
+    pairs_array=parse_pairs_to_2d_array(pairs_str)
 
     # ---- 使用二维数组构建依赖关系 ----
     for pair in pairs_array:
@@ -158,7 +160,7 @@ def get_dependency_paths(dep_graph: nx.DiGraph) -> list[list[int]]:
     # 对弱连通分量分别提取路径
     paths = []
     for component in nx.weakly_connected_components(dag):
-        sub = dag.subgraph(component).copy()
+        sub = nx.DiGraph(dag.subgraph(component).copy())
         # 找所有从入度为 0 的节点出发的路径
         roots = [n for n in sub.nodes if sub.in_degree(n) == 0]
         for root in roots:
@@ -373,7 +375,7 @@ You can only conduct the analysis based on the provided User-Story content. No a
 """
 
     # 构建第二次的完整prompt（包含第一次的回复作为上下文）
-    second_prompt = f"基于之前的对话：\n用户: {first_prompt}\n助手: {first_response}\n\n{str2}"
+    second_prompt = f"Based on the previous conversation: \nUser: {first_prompt}\nAssistant:{first_response}\n\n{str2}"
 
     # 生成第二次回复
     second_response = generate_response(

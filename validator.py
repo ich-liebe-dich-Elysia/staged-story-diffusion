@@ -135,7 +135,7 @@ def validate_role_action(
     # 3. 角色-动作一致性（LLM 判断）
     if not errors:  # 只有前面都通过才做 LLM 判断，节省调用
         prompt = (
-            f"用户故事中，角色是"{role}"，动作是"{action}"。\n"
+            f"用户故事中，角色是'{role}'，动作是'{action}'。\n"
             f"请判断这个角色做这个动作是否合理（1=合理，0=不合理），只输出数字。"
         )
         if _llm_judge(prompt) == 0:
@@ -173,8 +173,8 @@ def validate_benefit_quality(benefit: str, action: str) -> list[dict]:
     # 因果关系（LLM 判断）
     if not errors:
         prompt = (
-            f"用户故事：我想要"{action}"，以便于"{benefit}"。\n"
-            f"请判断"以便于"后面的目的是否是该动作的合理结果（1=是，0=否），只输出数字。"
+            f"用户故事：我想要'{action}'，以便于'{benefit}'。\n"
+            f"请判断'以便于'后面的目的是否是该动作的合理结果（1=是，0=否），只输出数字。"
         )
         if _llm_judge(prompt) == 0:
             errors.append({"field": "benefit", "reason": "目的与动作无因果关系"})
@@ -197,8 +197,8 @@ def validate_benefit_dependency(
     """
     errors = []
     prompt = (
-        f"在软件系统中，故事A的动作是"{prerequisite_action}"，目的是"{prerequisite_benefit}"。\n"
-        f"故事B的动作是"{action}"，目的是"{benefit}"。\n"
+        f"在软件系统中，故事A的动作是'{prerequisite_action}'，目的是'{prerequisite_benefit}'。\n"
+        f"故事B的动作是'{action}'，目的是'{benefit}'。\n"
         f"故事B依赖故事A（先完成A才能做B）。\n"
         f"请判断故事B的目的在故事A已完成的前提下是否合理（1=合理，0=不合理），只输出数字。"
     )
